@@ -1,11 +1,20 @@
 const router = require("express").Router();
-const auth = require("../middlewares/authMiddleware");
-const {postBlog}=require("../controllers/blogControllers")
+const {
+  postBlog,
+  getBlogs,
+  getBlog,
+  updateBlog,
+  deleteBlog,
+  getByAuthor,
+} = require("../controllers/blogControllers");
 
-router.post("/", auth, postBlog);
-// router.get("/",auth,getBlogs)
-// router.get("/:id",auth,getBlog)
-// router.patch("/:id",auth,updateBlog)
-// router.delete("/:id",auth,deleteBlog)
+const {auth,verifyRole}= require("../middlewares/authMiddleWare");
+
+router.post("/", auth,verifyRole(["author","admin"]), postBlog);
+router.get("/", auth, getBlogs);
+router.get("/author", auth, getByAuthor);
+router.get("/:id", auth, getBlog);
+router.patch("/:id", auth, updateBlog);
+router.delete("/:id", auth, deleteBlog);
 
 module.exports = router;
