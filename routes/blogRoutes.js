@@ -8,7 +8,7 @@ const {
   getByAuthor,
 } = require("../controllers/blogControllers");
 
-const {auth,verifyRole}= require("../middlewares/authMiddleWare");
+const {auth,verifyRole}= require("../middlewares/authMiddleware");
 
 router.post("/", auth,verifyRole(["author","admin"]), postBlog);
 router.get("/", auth, getBlogs);

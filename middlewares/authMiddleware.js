@@ -15,13 +15,13 @@ const auth = async (req, res, next) => {
     }
     const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decodedToken.id);
-      if (!user) {
-        return res.status(401).json({
-          status: "fail",
-          message: "User No Longer Exists",
-        });
-      }
-    req.user= user;
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        message: "User No Longer Exists",
+      });
+    }
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({
@@ -41,15 +41,15 @@ const auth = async (req, res, next) => {
 //     next();
 //   };
 // };
-const verifyRole=(role)=>{
-  return(req,res,next)=>{
-    if(!role.includes(req.user.role!==role)){
+const verifyRole = (role) => {
+  return (req, res, next) => {
+    if (!role.includes(req.user.role)) {
       return res.status(400).json({
-        status:"fail",
-        message:'youre not authorized'
-      })
+        status: "fail",
+        message: "youre not authorized",
+      });
     }
-    next()
-  }
-}
-module.exports = {auth,verifyRole};
+    next();
+  };
+};
+module.exports = { auth, verifyRole };
