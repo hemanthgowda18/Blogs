@@ -28,16 +28,24 @@ const getBlogs = async (req, res) => {
     let search = req.query.search || "";
     let page = req.query.page * 1 || 1;
     let limit = req.query.limit * 1 || 3;
-    let author = req.query.author || "";
-    let skip = (page - 1) * limit;
+    // let author = req.query.author || "";
+     let skip = (page - 1) * limit;
+    let sort=req.query.sort || "rating"
+    //ratings,year  //ratings year
+    sort && sort.split(",").join(" ")
     const blogs = await Blog.find({ title: { $regex: search, $options: "i" } })
-      .where("author")
-      .in([author])
+      // .where("author")
+      // .in([author])
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort(sort)
+      let totalBlogs=await Blog.countDocuments()
     res.status(200).json({
       status: "success",
-      data: {
+      page,
+      limit,
+      totalBlogs,
+       data: {
         blogs,
       },
     });
@@ -118,6 +126,26 @@ const getByAuthor = async (req, res) => {
     });
   }
 };
+const updateRatings= async (req, res) => {
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        updatedBlog,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   postBlog,
@@ -126,4 +154,6 @@ module.exports = {
   updateBlog,
   deleteBlog,
   getByAuthor,
+  updateRatings
+
 };

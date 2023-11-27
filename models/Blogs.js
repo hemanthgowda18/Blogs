@@ -1,4 +1,4 @@
-const {Schema,model}=require('mongoose')
+const {Schema,model, default: mongoose}=require('mongoose')
 const blogSchema = new Schema({
   title: {
     type: String,
@@ -15,13 +15,24 @@ const blogSchema = new Schema({
     required: [true, "Description is Required"],
   },
   author: {
-    type:Schema.Types.ObjectId,
-    ref:'user',
+    type: Schema.Types.ObjectId,
+    ref: "user",
     required: [true, "Author is Required"],
   },
-  image:{
-    type:[String],
-    default:""
-  }
+  image: {
+    type: [String],
+    default: "",
+  },
+  ratings: {
+    type: Number,
+    default: 1,
+    validator:{
+      validate:function (value){
+        return value >=1 && value <=5
+      },
+      message:"Ratings Should be between 1 and 5"
+    }
+    
+  },
 });
 module.exports=model("blog",blogSchema)
