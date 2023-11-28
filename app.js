@@ -2,6 +2,7 @@ const express = require("express");
 const authRouter = require("./routes/userRoutes");
 const blogRouter = require("./routes/blogRoutes");
 const globalErrorHandler = require("./controllers/globalErrorHandler");
+const CustomError = require("./utils/CustomError");
 
 const app = express();
 
@@ -11,9 +12,11 @@ app.use("/app/v1/blogs",blogRouter)
 
 app.all("*",(req,res,next)=>{
     // res.status(404).json({status:"fail",message:"page not found"})
-    let err=new Error("Page Not Found")
-    err.statusCode=404
-    err.status="fail"
+    // let err=new Error("Page Not Found")
+    // err.statusCode=404
+    // err.status="fail"
+    // next(err)
+    let err=new CustomError(404,"Page Not Found")
     next(err)
 })
 //Global Error Handler
