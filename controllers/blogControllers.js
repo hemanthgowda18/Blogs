@@ -73,14 +73,12 @@ const getBlog = async (req, res) => {
     });
   }
 };
-
 const updateBlog = async (req, res) => {
   try {
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-
     res.status(200).json({
       status: "success",
       data: {
@@ -126,19 +124,47 @@ const getByAuthor = async (req, res) => {
     });
   }
 };
-const updateRatings= async (req, res) => {
-  try {
-    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
 
-    res.status(200).json({
-      status: "success",
-      data: {
-        updatedBlog,
-      },
-    });
+const updateRatings = async (req, res) => {
+  try {
+    const { title, description, snippet, image, ratings } = req.body;
+    if (req.user.role === "author") {
+      const updatedBlog = await Blog.findOneAndUpdate(
+        {_id:id},
+        {
+          $set: {
+            title: title,
+            snippet: snippet,
+            description: description,
+            image: image,
+          },
+        },
+        { new: true, runValidators: true }
+      );
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          updatedBlog,
+        },
+      });
+    }
+    if (req.user.role === "user") {
+      const updatedBlog = await Blog.findOneAndUpdate(
+        {_id:id},
+        {
+          $set: { ratings: ratings },
+        },
+        { new: true, runValidators: true }
+      );
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          updatedBlog,
+        },
+      });
+    }
   } catch (error) {
     res.status(400).json({
       status: "fail",
