@@ -1,8 +1,8 @@
 const express = require("express");
 const authRouter = require("./routes/userRoutes");
 const blogRouter = require("./routes/blogRoutes");
-const globalErrorHandler = require("./controllers/globalErrorHandler");
 const CustomError = require("./utils/CustomError");
+const globalErrorControllers = require("./controllers/globalErrorControllers");
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.all("*",(req,res,next)=>{
     next(err)
 })
 //Global Error Handler
-app.use(globalErrorHandler)
+app.use(globalErrorControllers)
 
 
 
