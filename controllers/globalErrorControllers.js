@@ -28,6 +28,17 @@ const ValidationErrorHandler=(err)=>{
   let error=new CustomError(400,msg)
   return error
 }
+const duplicateErrorHandler=(err)=>{
+  let email=err.keyValue.email
+  let msg=`this email ${email} already exists`
+  let error=new CustomError(400,msg)
+  return error
+}
+const handleCastError=(err)=>{
+  let msg=`the value ${err.value} is not a proper ID`
+   let error = new CustomError(400, msg);
+   return error;
+}
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -39,6 +50,12 @@ module.exports = (err, req, res, next) => {
       if (err.name === "ValidationError") {
         err = ValidationErrorHandler(err);
       }
-     prodError(res,err);
+      if(err.code === 11000){
+        err=duplicateErrorHandler(err)
+      }
+      if (err.name === "CastError") {
+        err=handleCastError(err)
+      }
+      prodError(res, err);
    }
 };
