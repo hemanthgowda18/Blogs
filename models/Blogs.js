@@ -22,14 +22,7 @@ const blogSchema = new Schema({
   image: {
     type: [String],
     default: "",
-  },
-  ratings: {
-    type: Number,
-    default: 1,
-    min:[1,"above 1"],
-    max:[5,"below 5"]
-
-  },
+  }
   
 });
 module.exports=model("blog",blogSchema)

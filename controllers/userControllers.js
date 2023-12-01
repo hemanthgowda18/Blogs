@@ -8,7 +8,7 @@ const getToken = async (id) => {
     expiresIn: 24 * 60 * 60,
   });
 };
-const signup = asyncErrorHandler(async (req, res,next) => {
+const signup = asyncErrorHandler(async (req, res, next) => {
   const newUser = await User.create(req.body);
   const token = await getToken(newUser._id);
   res.status(201).json({
@@ -20,7 +20,7 @@ const signup = asyncErrorHandler(async (req, res,next) => {
   });
 });
 
-const login = asyncErrorHandler(async (req, res,next) => {
+const login = asyncErrorHandler(async (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     // return res.status(400).json({
     //   status: "fail",

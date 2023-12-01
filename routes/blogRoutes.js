@@ -6,7 +6,8 @@ const {
   updateBlog,
   deleteBlog,
   // getByAuthor,
-  updateRatings
+  postRating,
+  getRatings
 } = require("../controllers/blogControllers");
 
 const {auth,verifyRole}= require("../middlewares/authMiddleware");
@@ -16,7 +17,8 @@ router.get("/", auth, getBlogs);
 // router.get("/author", auth, getByAuthor);
 router.get("/:id", auth, getBlog);
 router.patch("/:id", auth,verifyRole(["author"]), updateBlog);
-router.patch("/ratings/:id", auth, verifyRole(["user"]), updateRatings);
+router.post("/ratings/:id",auth,verifyRole(["user"]),postRating)
+router.get("/ratings/:id",auth,verifyRole(["author","user","admin"]),getRatings)
 router.delete("/:id", auth,verifyRole(["admin","author"]), deleteBlog);
 
 module.exports = router;

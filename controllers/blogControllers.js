@@ -1,5 +1,8 @@
 const Blog = require("../models/Blogs");
+const Rating = require("../models/Ratings");
 const asyncErrorHandler=require("../utils/asyncErrorHandler")
+
+
 const postBlog=asyncErrorHandler(async(req, res) => {
     let user = req.user;
     const newBlog = await Blog.create({
@@ -118,48 +121,33 @@ const getByAuthor =asyncErrorHandler( async (req, res) => {
     });
   });
 
-
-
-const updateRatings = asyncErrorHandler(async (req, res) => {
-    const { title, description, snippet, image, ratings } = req.body;
-    if (req.user.role === "author") {
-      const updatedBlog = await Blog.findOneAndUpdate(
-        {_id:id},
-        {
-          $set: {
-            title: title,
-            snippet: snippet,
-            description: description,
-            image: image,
-          },
-        },
-        { new: true, runValidators: true }
-      );
-
-      return res.status(200).json({
-        status: "success",
-        data: {
-          updatedBlog,
-        },
-      });
+ 
+ let postRating=asyncErrorHandler(async(req,res)=>{
+  let userId=req.user._id
+  let blogId=req.params.id
+  let rating=await Rating.create({ratings:req.body.ratings,userId:userId,blogId:blogId})
+  res.status(201).json({
+    status:"success",
+    blogId,
+    data:{
+      rating
     }
-    if (req.user.role === "user") {
-      const updatedBlog = await Blog.findOneAndUpdate(
-        {_id:id},
-        {
-          $set: { ratings: ratings },
-        },
-        { new: true, runValidators: true }
-      );
+  })
 
-      return res.status(200).json({
-        status: "success",
-        data: {
-          updatedBlog,
-        },
-      });
-    }
- })
+})
+ let getRatings = asyncErrorHandler(async (req, res) => {
+   let blogId = req.params.id;
+   let ratings= await Rating.find({blogId: blogId});
+   res.status(200).json({
+     status: "success",
+     blogId,
+     data: {
+       ratings,
+     },
+   });
+ });
+
+
 
 
 module.exports = {
@@ -169,6 +157,6 @@ module.exports = {
   updateBlog,
   deleteBlog,
   getByAuthor,
-  updateRatings
-
+  getRatings,
+  postRating
 };
