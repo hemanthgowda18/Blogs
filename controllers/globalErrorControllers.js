@@ -1,24 +1,33 @@
 const CustomError = require("../utils/CustomError");
 
-const devError=(res,err)=>{
-  res.status(err.statusCode).json({
-    status:err.status,
-    message:err.message,
-    error:err,
-    errorStack:err.stack
-  })
+const devError=(req,res,err)=>{
+  // console.log("error in dev");
+  req.flash("error",err.message)
+  const referringPage=req.header("Referer") || "/"
+  res.redirect(referringPage)
+ // res.status(err.statusCode).json({
+  //   status:err.status,
+  //   message:err.message,
+  //   error:err,
+  //   errorStack:err.stack
+  // })
 }
-const prodError=(res,err)=>{
+const prodError=(req,res,err)=>{
   if (err.isOperational === true) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
+    req.flash("error",err.message)
+    const referringPage=req.header("Referer") || "/"
+    res.redirect(referringPage)
+
+    // res.status(err.statusCode).json({
+    //   status: err.status,
+    //   message: err.message,
+    // });
   } else {
-    res.status(err.statusCode).json({
-      status: "fail",
-      message: "Something Went Wrong,Please Try Again Later",
-    });
+    req.flash("error","Something Went Wrong,Please Try Again Later")
+    // res.status(err.statusCode).json({
+    //   status: "fail",
+    //   message: "Something Went Wrong,Please Try Again Later",
+    // });
   }
 }
 const ValidationErrorHandler=(err)=>{
@@ -51,7 +60,7 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "Error";
   if(process.env.NODE_ENV === "development"){
-    devError(res,err)
+    devError(req,res,err)
   }
    if (process.env.NODE_ENV === "production"){
       if (err.name === "ValidationError") {
@@ -69,6 +78,6 @@ module.exports = (err, req, res, next) => {
       if (err.name === "JsonWebTokenError"){
          err=handleTokenError()
       } 
-      prodError(res, err);
+      prodError(req,res, err);
    }
 };
